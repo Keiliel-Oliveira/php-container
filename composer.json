@@ -21,9 +21,9 @@
     "minimum-stability": "dev",
     "require": {},
     "scripts": {
-        "cs-fix": "./vendor/bin/php-cs-fixer fix",
+        "cs-fix": "./vendor/bin/php-cs-fixer fix -vvv",
         "phpstan": "./vendor/bin/phpstan analyse",
         "tests": "./vendor/bin/phpunit --colors=always",
-        "test": "./vendor/bin/phpunit --colors=always --testsuite"        
+        "test": "./vendor/bin/phpunit --colors=always --testsuite"    
     }
 }
