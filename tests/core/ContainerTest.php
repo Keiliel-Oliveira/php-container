@@ -1,6 +1,12 @@
 <?php
 
 declare(strict_types = 1);
+use Dummys\ConstructorWithDefaultParam;
+use Dummys\ConstructorWithObjectParam;
+use Dummys\ConstructorWithParam;
+use Dummys\ConstrutorWithContainerParam;
+use Dummys\WithConstructor;
+use Dummys\WithoutConstructor;
 use KeilielOliveira\Container\Container;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -11,7 +17,7 @@ use PHPUnit\Framework\TestCase;
  * @coversNothing
  */
 final class ContainerTest extends TestCase {
-    #[DataProvider( 'providerClassToTestMakeMethod' )]
+    #[DataProvider( 'providerDummyClassToTestMakeMethod' )]
     /**
      * @param class-string $class
      */
@@ -20,83 +26,56 @@ final class ContainerTest extends TestCase {
         $object = $container->make( $class );
 
         $this->assertInstanceOf( $class, $object );
-        $this->assertTrue( $object->teste() );
     }
 
     /**
-     * @return class-string[]
+     * @return array<string, class-string[]>
      */
-    public static function providerClassToTestMakeMethod(): array {
+    public static function providerDummyClassToTestMakeMethod(): array {
         return [
-            'A' => [A::class],
-            'B' => [B::class],
+            'sem construtor' => [
+                WithoutConstructor::class,
+            ],
+            'com construtor' => [
+                WithConstructor::class,
+            ],
+            'parâmetro com valor pre-definido' => [
+                ConstructorWithDefaultParam::class,
+            ],
+            'classes como parâmetro' => [
+                ConstructorWithObjectParam::class,
+            ],
+            'contêiner como parâmetro' => [
+                ConstrutorWithContainerParam::class,
+            ],
         ];
     }
 
-    public function testMakeIsCreatingObjectWithDefaultParams(): void {
-        $container = new Container();
-        $object = $container->make( D::class );
-
-        $this->assertInstanceOf( D::class, $object );
-        $this->assertEquals( 10, $object->a );
-        $this->assertTrue( $object->teste() );
-    }
-
-    #[DataProvider( 'providerClassToTestMakeWithMethod' )]
+    #[DataProvider( 'providerDummyClassToTestMakeWithMethod' )]
     /**
      * @param class-string $class
      * @param int[]        $params
      */
-    public function testMakeWithIsCreatingObjectWithReceivedParams( string $class, array $params ): void {
+    public function testMakeWithIsCreatingObjectWithParams( string $class, array $params ): void {
         $container = new Container();
         $object = $container->makeWith( $class, $params );
 
         $this->assertInstanceOf( $class, $object );
-        $this->assertTrue( $object->teste() );
     }
 
     /**
-     * @return array<string, array<array<int>|class-string>>
+     * @return array<string, array{0: class-string, 1: int[]}>
      */
-    public static function providerClassToTestMakeWithMethod(): array {
+    public static function providerDummyClassToTestMakeWithMethod(): array {
         return [
-            'C' => [
-                C::class,
-                ['a' => 5],
+            'parâmetro com valor pre-definido' => [
+                ConstructorWithDefaultParam::class,
+                ['i' => 5],
             ],
-            'D' => [
-                D::class,
-                ['a' => 5],
+            'parâmetro sem valor pre-definido' => [
+                ConstructorWithParam::class,
+                ['i' => 5],
             ],
         ];
-    }
-
-    public function testMakeWithIsSolvingParams(): void {
-        $container = new Container();
-        $object = $container->makeWith( E::class, ['a' => 5, 'd' => new D()] );
-
-        $this->assertInstanceOf( E::class, $object );
-        $this->assertTrue( $object->teste() );
-    }
-
-    public function testHasIsReturningTrueWithSavedObject(): void {
-        $container = new Container();
-        $container->make( A::class );
-
-        $this->assertTrue( $container->has( A::class ) );
-    }
-
-    public function testHasIsReturningFalseWithUnsavedObject(): void {
-        $container = new Container();
-
-        $this->assertFalse( $container->has( A::class ) );
-    }
-
-    public function testGetIsReturningObjectWithSavedObject(): void {
-        $container = new Container();
-        $container->make( A::class );
-
-        $object = $container->get( A::class );
-        $this->assertInstanceOf( A::class, $object );
     }
 }

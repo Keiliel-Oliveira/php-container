@@ -60,6 +60,10 @@ class ObjectFactory {
         $paramsTypes = $this->object->getRequiredParamsTypes();
 
         foreach ( $paramsTypes[$name] as $i => $type ) {
+            if ( Container::class == $type ) {
+                return $this->container;
+            }
+
             if ( class_exists( $type ) && $this->container->has( $type ) ) {
                 return $this->container->get( $type );
             }

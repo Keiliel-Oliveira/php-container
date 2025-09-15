@@ -7,6 +7,7 @@ namespace KeilielOliveira\Container\Mappers;
 use KeilielOliveira\Container\Collectors\ObjectParamsCollector;
 use KeilielOliveira\Container\ObjectData;
 use KeilielOliveira\Container\Validators\ObjectParamsValidator;
+use KeilielOliveira\Container\Validators\ObjectValidator;
 
 /**
  * @template T of object
@@ -43,7 +44,9 @@ class ObjectMapper {
     }
 
     private function mapObjectType(): void {
-        $this->objectData->setObject( is_string( $this->object ) ? $this->object : \Closure::fromCallable( $this->object ) );
+        new ObjectValidator( $this->object )->validate();
+
+        $this->objectData->setObject( $this->object );
         $this->objectData->setObjectType( is_string( $this->object ) ? 'class' : 'function' );
     }
 
